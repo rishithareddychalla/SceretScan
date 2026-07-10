@@ -34,7 +34,7 @@ def generate_html_report(
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SentinelScan Security Dashboard</title>
+    <title>SentinelScan Enterprise Dashboard</title>
     <!-- Tailwind CSS for layout structure -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js for beautiful charts -->
@@ -42,32 +42,22 @@ def generate_html_report(
     <!-- FontAwesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                        mono: ['"JetBrains Mono"', 'monospace'],
+                        sans: ['Outfit', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
                     },
                     colors: {
-                        dark: {
-                            900: '#0B0F19',
-                            800: '#111827',
-                            700: '#1F2937',
-                            600: '#374151',
-                        },
-                        primary: {
-                            500: '#6366F1',
-                            600: '#4F46E5',
-                            700: '#4338CA',
-                        },
-                        critical: '#EF4444',
-                        high: '#F97316',
-                        medium: '#F59E0B',
-                        low: '#10B981',
+                        darkbg: '#0b0f19',
+                        darkcard: '#131b2e',
+                        accentpurple: '#8b5cf6',
+                        accentpink: '#ec4899',
                     }
                 }
             }
@@ -76,7 +66,8 @@ def generate_html_report(
     
     <style>
         body {
-            background: linear-gradient(135deg, #0B0F19 0%, #111322 100%);
+            background-color: #0b0f19;
+            font-family: 'Outfit', sans-serif;
             color: #E2E8F0;
             min-height: 100vh;
         }
@@ -113,17 +104,19 @@ def generate_html_report(
         }
     </style>
 </head>
-<body class="font-sans antialiased custom-scrollbar">
+<body class="font-sans antialiased custom-scrollbar text-slate-100 min-h-screen">
 
     <!-- Top Navigation Bar -->
-    <header class="sticky top-0 z-50 glass-panel border-b border-white/5 py-4 px-6 md:px-12 flex justify-between items-center">
-        <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                <i class="fa-solid fa-shield-halved text-white text-xl"></i>
+    <nav class="sticky top-0 z-50 glass-panel border-b border-slate-800 px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="bg-gradient-to-tr from-accentpurple to-accentpink p-2.5 rounded-xl shadow-lg">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                </svg>
             </div>
             <div>
-                <span class="font-extrabold text-xl tracking-tight bg-gradient-to-r from-white via-indigo-200 to-indigo-400 bg-clip-text text-transparent">SentinelScan</span>
-                <span class="text-[10px] block text-white/40 font-mono">V1.0.0 • Production Audit</span>
+                <h1 class="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-accentpurple bg-clip-text text-transparent">SentinelScan</h1>
+                <p class="text-xs text-slate-400 font-medium">Enterprise Security Dashboard</p>
             </div>
         </div>
         
@@ -137,7 +130,7 @@ def generate_html_report(
                 <span class="hidden sm:inline">Print Report</span>
             </button>
         </div>
-    </header>
+    </nav>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
@@ -155,8 +148,8 @@ def generate_html_report(
                                 stroke-dasharray="251.2" stroke-dashoffset="__SCORE_OFFSET__" stroke-linecap="round" class="transition-all duration-1000" />
                         <defs>
                             <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#4F46E5" />
-                                <stop offset="100%" stop-color="#10B981" />
+                                <stop offset="0%" stop-color="#8b5cf6" />
+                                <stop offset="100%" stop-color="#ec4899" />
                             </linearGradient>
                         </defs>
                     </svg>
@@ -219,7 +212,7 @@ def generate_html_report(
 
         <!-- Tabbed Navigation -->
         <div class="flex border-b border-white/10 mb-8 overflow-x-auto">
-            <button onclick="switchTab('tab-dashboard')" id="btn-tab-dashboard" class="px-6 py-3 font-semibold text-sm border-b-2 border-indigo-500 text-white transition-all flex items-center space-x-2">
+            <button onclick="switchTab('tab-dashboard')" id="btn-tab-dashboard" class="px-6 py-3 font-semibold text-sm border-b-2 border-accentpurple text-white transition-all flex items-center space-x-2">
                 <i class="fa-solid fa-chart-pie"></i>
                 <span>Analytics</span>
             </button>
@@ -260,31 +253,31 @@ def generate_html_report(
             <div class="glass-panel rounded-2xl p-6 shadow-xl">
                 <h3 class="text-base font-bold text-white mb-4">🔍 Quick Remediation Actions</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div class="bg-indigo-600/10 border border-indigo-500/20 rounded-xl p-4 flex flex-col justify-between">
+                    <div class="bg-purple-600/10 border border-purple-500/20 rounded-xl p-4 flex flex-col justify-between">
                         <div>
-                            <span class="text-indigo-400 text-xl"><i class="fa-solid fa-code"></i></span>
+                            <span class="text-purple-400 text-xl"><i class="fa-solid fa-code"></i></span>
                             <h4 class="text-sm font-semibold text-white mt-2">Generate .gitignore</h4>
                             <p class="text-xs text-slate-400 mt-1">Audit shows sensitive files. Auto-fix is available to prevent commits.</p>
                         </div>
-                        <code class="text-[10px] font-mono bg-black/30 p-2 rounded block mt-4 text-indigo-300">python sentinel.py fix gitignore</code>
+                        <code class="text-[10px] font-mono bg-black/30 p-2 rounded block mt-4 text-purple-300">python sentinel.py fix gitignore</code>
                     </div>
                     
-                    <div class="bg-indigo-600/10 border border-indigo-500/20 rounded-xl p-4 flex flex-col justify-between">
+                    <div class="bg-purple-600/10 border border-purple-500/20 rounded-xl p-4 flex flex-col justify-between">
                         <div>
-                            <span class="text-indigo-400 text-xl"><i class="fa-solid fa-anchor"></i></span>
+                            <span class="text-purple-400 text-xl"><i class="fa-solid fa-anchor"></i></span>
                             <h4 class="text-sm font-semibold text-white mt-2">Install Commit Shield</h4>
                             <p class="text-xs text-slate-400 mt-1">Install a git hook that automatically blocks critical secret commits locally.</p>
                         </div>
-                        <code class="text-[10px] font-mono bg-black/30 p-2 rounded block mt-4 text-indigo-300">python sentinel.py install-hook</code>
+                        <code class="text-[10px] font-mono bg-black/30 p-2 rounded block mt-4 text-purple-300">python sentinel.py install-hook</code>
                     </div>
                     
-                    <div class="bg-indigo-600/10 border border-indigo-500/20 rounded-xl p-4 flex flex-col justify-between">
+                    <div class="bg-purple-600/10 border border-purple-500/20 rounded-xl p-4 flex flex-col justify-between">
                         <div>
-                            <span class="text-indigo-400 text-xl"><i class="fa-solid fa-history"></i></span>
+                            <span class="text-purple-400 text-xl"><i class="fa-solid fa-history"></i></span>
                             <h4 class="text-sm font-semibold text-white mt-2">Compare Scan Snapshots</h4>
                             <p class="text-xs text-slate-400 mt-1">Compare findings with a past snapshot to identify newly introduced secrets.</p>
                         </div>
-                        <code class="text-[10px] font-mono bg-black/30 p-2 rounded block mt-4 text-indigo-300">python sentinel.py compare &lt;file&gt;</code>
+                        <code class="text-[10px] font-mono bg-black/30 p-2 rounded block mt-4 text-purple-300">python sentinel.py compare &lt;file&gt;</code>
                     </div>
                 </div>
             </div>
@@ -299,12 +292,12 @@ def generate_html_report(
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </span>
                     <input type="text" id="finding-search" oninput="filterFindings()" placeholder="Search by file path, rule name, or severity..." 
-                           class="w-full pl-10 pr-4 py-2 rounded-lg bg-black/20 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-indigo-500 transition duration-200">
+                           class="w-full pl-10 pr-4 py-2 rounded-lg bg-black/20 border border-white/10 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-purple-500 transition duration-200">
                 </div>
                 
                 <div class="flex items-center space-x-3">
                     <select id="filter-severity" onchange="filterFindings()" 
-                            class="bg-dark-700 border border-white/10 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-indigo-500">
+                            class="bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-purple-500">
                         <option value="">All Severities</option>
                         <option value="CRITICAL">Critical</option>
                         <option value="HIGH">High</option>
@@ -313,7 +306,7 @@ def generate_html_report(
                     </select>
                     
                     <select id="filter-source" onchange="filterFindings()" 
-                            class="bg-dark-700 border border-white/10 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-indigo-500">
+                            class="bg-slate-800 border border-white/10 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-purple-500">
                         <option value="">All Sources</option>
                         <option value="active">Active Files</option>
                         <option value="history">Git History</option>
@@ -362,8 +355,8 @@ def generate_html_report(
 
     </main>
 
-    <footer class="text-center py-8 border-t border-white/5 text-xs text-slate-500 mt-12">
-        <p>SentinelScan Security Platform • Built by Pair Programming Assistant</p>
+    <footer class="text-center py-8 border-t border-slate-800 text-xs text-slate-500 mt-12">
+        <p>SentinelScan Enterprise Security Platform</p>
     </footer>
 
     <!-- Inject data safely as JSON -->
@@ -385,10 +378,10 @@ def generate_html_report(
             tabs.forEach(t => {
                 const btn = document.getElementById('btn-' + t);
                 if (t === tabId) {
-                    btn.classList.add('border-indigo-500', 'text-white');
+                    btn.classList.add('border-accentpurple', 'text-white');
                     btn.classList.remove('border-transparent', 'text-slate-400');
                 } else {
-                    btn.classList.remove('border-indigo-500', 'text-white');
+                    btn.classList.remove('border-accentpurple', 'text-white');
                     btn.classList.add('border-transparent', 'text-slate-400');
                 }
             });
@@ -415,7 +408,7 @@ def generate_html_report(
             container.innerHTML = list.map((f, index) => {
                 const type = f.in_history ? 
                     `<span class="text-xs bg-slate-500/10 border border-slate-500/20 text-slate-400 px-2 py-0.5 rounded flex items-center space-x-1"><i class="fa-solid fa-clock-rotate-left"></i> <span>Git History</span></span>` : 
-                    `<span class="text-xs bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded flex items-center space-x-1"><i class="fa-solid fa-file-code"></i> <span>Active File</span></span>`;
+                    `<span class="text-xs bg-purple-500/10 border border-purple-500/20 text-purple-400 px-2 py-0.5 rounded flex items-center space-x-1"><i class="fa-solid fa-file-code"></i> <span>Active File</span></span>`;
                 
                 const codeLine = f.line_content ? 
                     `<div class="bg-black/30 p-3 rounded-lg border border-white/5 font-mono text-xs overflow-x-auto text-slate-300 mt-3 select-all">
@@ -444,7 +437,7 @@ def generate_html_report(
                     ${codeLine}
                     
                     <div class="mt-4 flex justify-between items-center border-t border-white/5 pt-3">
-                        <button onclick="toggleDetails('${detailsId}')" class="text-xs font-medium text-indigo-400 hover:text-indigo-300 transition duration-150 flex items-center space-x-1">
+                        <button onclick="toggleDetails('${detailsId}')" class="text-xs font-medium text-purple-400 hover:text-purple-300 transition duration-150 flex items-center space-x-1">
                             <span id="btn-text-${detailsId}">Show Risk Details & Remediation</span>
                             <i id="btn-icon-${detailsId}" class="fa-solid fa-chevron-down"></i>
                         </button>
@@ -453,8 +446,8 @@ def generate_html_report(
                     
                     <!-- Expandable info -->
                     <div id="${detailsId}" class="hidden mt-4 border-t border-white/5 pt-4 space-y-4 text-xs sm:text-sm text-slate-300 transition-all duration-300">
-                        <div class="bg-indigo-950/10 border border-indigo-500/10 p-4 rounded-xl">
-                            <span class="font-bold text-indigo-300 block mb-1">🛡️ Risk Description</span>
+                        <div class="bg-purple-950/10 border border-purple-500/10 p-4 rounded-xl">
+                            <span class="font-bold text-purple-300 block mb-1">🛡️ Risk Description</span>
                             <p class="text-slate-400">${escapeHtml(f.description || 'No description provided.')}</p>
                         </div>
                         <div class="bg-emerald-950/10 border border-emerald-500/10 p-4 rounded-xl">
@@ -464,7 +457,7 @@ def generate_html_report(
                         ${f.commit_hash ? `
                         <div class="bg-slate-900/40 border border-white/5 p-4 rounded-xl font-mono text-xs space-y-1">
                             <span class="font-bold text-slate-300 block mb-1"><i class="fa-solid fa-code-commit mr-1"></i> Commit Metadata</span>
-                            <div>Hash: <span class="text-indigo-400 font-semibold select-all">${f.commit_hash}</span></div>
+                            <div>Hash: <span class="text-purple-400 font-semibold select-all">${f.commit_hash}</span></div>
                             <div>Author: <span class="text-slate-400">${escapeHtml(f.commit_author)}</span></div>
                             <div>Date: <span class="text-slate-400">${f.commit_date}</span></div>
                             <div>Message: <span class="text-slate-400">"${escapeHtml(f.commit_message)}"</span></div>
@@ -533,10 +526,10 @@ def generate_html_report(
             
             container.innerHTML = history.map(h => `
                 <div class="relative pl-2">
-                    <span class="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-indigo-500 border border-[#0B0F19] ring-4 ring-indigo-500/10 flex items-center justify-center"></span>
+                    <span class="absolute -left-[31px] top-1.5 w-4 h-4 rounded-full bg-purple-500 border border-[#0B0F19] ring-4 ring-purple-500/10 flex items-center justify-center"></span>
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-500 mb-1">
                         <div class="flex items-center space-x-2">
-                            <span class="font-bold text-indigo-400 font-mono select-all">${h.commit_hash.substring(0, 8)}</span>
+                            <span class="font-bold text-purple-400 font-mono select-all">${h.commit_hash.substring(0, 8)}</span>
                             <span>•</span>
                             <span class="font-medium text-slate-400">${escapeHtml(h.commit_author)}</span>
                         </div>
@@ -586,10 +579,10 @@ def generate_html_report(
                 `).join('')}
             </div>
             
-            <div class="bg-indigo-600/5 border border-indigo-500/10 p-5 rounded-xl text-xs sm:text-sm">
+            <div class="bg-purple-600/5 border border-purple-500/10 p-5 rounded-xl text-xs sm:text-sm">
                 <span class="font-bold text-white block mb-1">💡 Auto-Fix Recommendation</span>
                 <p class="text-slate-400">Run the SentinelScan autofix tool in your workspace directory to immediately append these paths to your \`.gitignore\` configuration:</p>
-                <code class="block font-mono bg-black/40 p-3 rounded-lg border border-white/5 text-indigo-300 mt-3 select-all">python sentinel.py fix gitignore</code>
+                <code class="block font-mono bg-black/40 p-3 rounded-lg border border-white/5 text-purple-300 mt-3 select-all">python sentinel.py fix gitignore</code>
             </div>`;
         }
         

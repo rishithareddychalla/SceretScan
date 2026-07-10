@@ -23,5 +23,8 @@ COPY . /app/
 # Expose port 5000 for the Flask Web UI
 EXPOSE 5000
 
+# Set default host environment variable for Docker container ingress
+ENV HOST=0.0.0.0
+
 # Start Flask web application (defaulting to host 0.0.0.0 for docker ingress)
 CMD ["python", "web_ui.py"]

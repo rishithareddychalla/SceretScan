@@ -1181,12 +1181,14 @@ def install_hook_route():
         return jsonify({"error": msg}), 500
 
 def start_web_server(port=5000):
-    print(f"🚀 SentinelScan web interface starting on http://127.0.0.1:{port}")
-    try:
-        webbrowser.open(f"http://127.0.0.1:{port}")
-    except Exception:
-        pass
-    app.run(host="127.0.0.1", port=port, debug=False)
+    host = os.environ.get("HOST", "127.0.0.1")
+    print(f"🚀 SentinelScan web interface starting on http://{host}:{port}")
+    if host == "127.0.0.1":
+        try:
+            webbrowser.open(f"http://127.0.0.1:{port}")
+        except Exception:
+            pass
+    app.run(host=host, port=port, debug=False)
 
 if __name__ == "__main__":
     start_web_server()

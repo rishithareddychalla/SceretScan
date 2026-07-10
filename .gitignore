@@ -1,0 +1,13 @@
+# SentinelScan Security Ignores
+.env
+demo/
+report.html
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.venv/
+venv/
+ENV/

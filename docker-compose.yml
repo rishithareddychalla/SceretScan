@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  sentinelscan:
+    build: .
+    container_name: sentinelscan-dashboard
+    ports:
+      - "5000:5000"
+    volumes:
+      # Mount the current host directory to let the container scan the local codebase
+      - .:/app
+    environment:
+      # Pass through API keys if available in local environment
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    restart: unless-stopped

@@ -23,7 +23,7 @@ This repository serves as a double-submission for:
 * **Lightweight Footprint**: Built on `python:3.11-slim` with temporary layer cleanups, keeping build times and image sizes minimal.
 * **Automated Package Management**: Bundles python dependencies and handles system-level packages (such as `git` for commit analysis).
 * **Strict Docker Ignore Rules**: Utilizes `.dockerignore` to filter out local virtual environments, test suites, database caches, and local configuration files.
-* **Docker Compose Orchestration**: Configured to run the web server on port `5000` with native bind-mount support to dynamically scan codebases on the host machine.
+* **Docker Compose Orchestration**: Configured to map the web server to host port `5005` (routing to container port `5000`) with native bind-mount support to dynamically scan codebases on the host machine.
 * **Environment Variable Support**: Fully configurable via a `.env` template supporting customizable port, host, and AI provider parameters.
 
 ---
@@ -56,14 +56,14 @@ OPENAI_API_KEY=your_openai_api_key_here
 ## Building and Running (Docker Challenge)
 
 ### Method 1: Using Docker Compose (Recommended)
-Docker Compose automatically builds the environment, maps port `5000`, loads the `.env` parameters, and mounts the current directory inside the container for active scanning.
+Docker Compose automatically builds the environment, maps host port `5005` to container port `5000`, loads the `.env` parameters, and mounts the current directory inside the container for active scanning.
 
 1. **Start the application**:
    ```bash
    docker-compose up --build -d
    ```
 2. **Access the Web Dashboard**:
-   Open [http://localhost:5000](http://localhost:5000) in your web browser.
+   Open [http://localhost:5005](http://localhost:5005) in your web browser.
 3. **Stop the application**:
    ```bash
    docker-compose down
@@ -78,7 +78,7 @@ Docker Compose automatically builds the environment, maps port `5000`, loads the
    * **Linux / macOS**:
      ```bash
      docker run -d \
-       -p 5000:5000 \
+       -p 5005:5000 \
        --env-file .env \
        -v "$(pwd):/app" \
        --name secretscan \
@@ -87,7 +87,7 @@ Docker Compose automatically builds the environment, maps port `5000`, loads the
    * **Windows (PowerShell)**:
      ```powershell
      docker run -d `
-       -p 5000:5000 `
+       -p 5005:5000 `
        --env-file .env `
        -v "${PWD}:/app" `
        --name secretscan `

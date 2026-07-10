@@ -3,7 +3,7 @@ services:
     build: .
     container_name: sentinelscan-dashboard
     ports:
-      - "5000:5000"
+      - "5005:5000"
     volumes:
       # Mount the current host directory to let the container scan the local codebase
       - .:/app

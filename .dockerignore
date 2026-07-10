@@ -1,0 +1,16 @@
+.git
+.github
+.gitignore
+.env
+.pytest_cache/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+report.html
+sentinel-report.sarif
+tests/
+Dockerfile
+docker-compose.yml
+README.md

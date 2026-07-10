@@ -622,15 +622,20 @@ def generate_html_report(
                 const cat = f.category || "Other";
                 categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
             });
+
+            const totalFindings = findingsData.length;
+            const severityData = totalFindings === 0 ? [1] : [severityCounts.CRITICAL, severityCounts.HIGH, severityCounts.MEDIUM, severityCounts.LOW];
+            const severityColors = totalFindings === 0 ? ['#10B981'] : ['#EF4444', '#F97316', '#F59E0B', '#10B981'];
+            const severityLabels = totalFindings === 0 ? ['Secure'] : ['Critical', 'High', 'Medium', 'Low'];
             
             // Severity Chart
             new Chart(document.getElementById('severityChart'), {
                 type: 'doughnut',
                 data: {
-                    labels: ['Critical', 'High', 'Medium', 'Low'],
+                    labels: severityLabels,
                     datasets: [{
-                        data: [severityCounts.CRITICAL, severityCounts.HIGH, severityCounts.MEDIUM, severityCounts.LOW],
-                        backgroundColor: ['#EF4444', '#F97316', '#F59E0B', '#10B981'],
+                        data: severityData,
+                        backgroundColor: severityColors,
                         borderColor: '#111827',
                         borderWidth: 2
                     }]

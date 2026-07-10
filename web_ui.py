@@ -75,6 +75,9 @@ HTML_TEMPLATE = """
         .terminal-log {
             animation: fadeIn 0.3s ease-out;
         }
+        .animate-fadeIn {
+            animation: fadeIn 0.2s ease-out;
+        }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(4px); }
             to { opacity: 1; transform: translateY(0); }
@@ -110,7 +113,21 @@ HTML_TEMPLATE = """
                 <p class="text-xs text-slate-400 font-medium">Enterprise Security Dashboard</p>
             </div>
         </div>
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3">
+            <!-- Custom Policy Controls Button -->
+            <button onclick="toggleModal('modal-policy')" class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700 transition-all flex items-center justify-center relative group" title="Custom Scanning Policy">
+                <svg class="w-5 h-5 text-accentpurple" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                </svg>
+            </button>
+            
+            <!-- Remediation Center Button -->
+            <button onclick="toggleModal('modal-remediation')" class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700 transition-all flex items-center justify-center relative group" title="Remediation Center">
+                <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+            </button>
+            
             <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-3 py-1.5 rounded-full font-semibold flex items-center gap-1.5 shadow-sm">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Local Engine Active
             </span>
@@ -209,104 +226,46 @@ HTML_TEMPLATE = """
             </form>
         </div>
 
-        <!-- Middle Section: Policy Controls & Console Logs -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-            
-            <!-- Middle Left: Policies & Remediations -->
-            <div class="space-y-8">
-                <!-- Custom Scanning Policy -->
-                <div class="glass p-6 rounded-2xl shadow-xl space-y-5">
-                    <h2 class="text-md font-bold flex items-center gap-2 border-b border-slate-800 pb-2">
-                        <svg class="w-5 h-5 text-accentpurple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                        </svg> Custom Policy Controls
-                    </h2>
-                    
-                    <!-- Entropy Threshold Range Slider -->
-                    <div>
-                        <div class="flex justify-between text-xs font-bold text-slate-400 mb-2">
-                            <span class="uppercase tracking-wider">Entropy Threshold</span>
-                            <span id="entropy-val" class="text-accentpurple font-mono text-sm">4.5</span>
-                        </div>
-                        <input type="range" id="entropy-slider" min="3.0" max="7.0" step="0.1" value="4.5" oninput="document.getElementById('entropy-val').innerText = this.value" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-accentpurple">
-                        <p class="text-[10px] text-slate-500 mt-1">Lower values find more custom secrets but increase false positives.</p>
-                    </div>
-
-                    <!-- Detector Categories Checkboxes -->
-                    <div class="space-y-2">
-                        <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Enabled Detectors</span>
-                        <div class="grid grid-cols-2 gap-2 text-xs font-medium" id="policy-categories">
-                            <!-- Loaded dynamically -->
-                        </div>
-                    </div>
+        <!-- Middle Section: Console Logs & Status -->
+        <div class="w-full space-y-8">
+            <!-- Error Banner (Custom Alert) -->
+            <div id="error-banner" class="hidden bg-red-500/10 border border-red-500/20 p-5 rounded-2xl flex items-start gap-4 shadow-lg">
+                <div class="bg-red-500/20 p-2 rounded-lg text-red-400">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
                 </div>
-
-                <!-- Git & Gitignore Remediations -->
-                <div class="glass p-6 rounded-2xl shadow-xl space-y-4">
-                    <h2 class="text-lg font-bold border-b border-slate-800 pb-2 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                        </svg> Remediation Center
-                    </h2>
-                    
-                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800 space-y-3">
-                        <h3 class="text-sm font-bold text-slate-300">Workspace Guards</h3>
-                        <p class="text-xs text-slate-400 leading-relaxed">Block exposures at the pre-commit layer or automatically ignore exposed environment files.</p>
-                        <div class="grid grid-cols-1 gap-2 pt-2">
-                            <button onclick="runRemediation('install-hook')" class="w-full text-left bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold px-4 py-2.5 rounded-lg text-xs flex items-center justify-between transition-all">
-                                <span>Install Git Pre-Commit Hook</span>
-                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                            </button>
-                            <button onclick="runRemediation('fix-gitignore')" class="w-full text-left bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold px-4 py-2.5 rounded-lg text-xs flex items-center justify-between transition-all">
-                                <span>Audit & Auto-fix .gitignore</span>
-                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                            </button>
-                        </div>
-                    </div>
+                <div class="flex-1">
+                    <h4 class="text-sm font-bold text-red-400 font-sans">Execution Error</h4>
+                    <p id="error-message" class="text-xs text-slate-300 mt-1 leading-relaxed font-mono whitespace-pre-wrap"></p>
+                    <div id="error-tips-container" class="mt-3"></div>
+                    <button onclick="document.getElementById('error-banner').classList.add('hidden')" class="mt-4 bg-red-500/20 hover:bg-red-500/30 text-red-400 font-bold px-3 py-1.5 rounded-lg text-[10px] transition-all">
+                        Dismiss
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Scan Status Overlay (Real-time logs style) -->
+            <div id="scan-loading" class="hidden glass p-6 rounded-2xl flex flex-col min-h-[400px]">
+                <div class="flex items-center gap-3 border-b border-slate-800 pb-3 mb-4">
+                    <div class="w-4 h-4 border-2 border-slate-800 border-t-accentpurple rounded-full animate-spin"></div>
+                    <h3 class="text-sm font-bold text-slate-300">Scanner Engine Console Activity</h3>
+                </div>
+                <!-- Interactive CLI console screen -->
+                <div class="flex-1 bg-black/80 font-mono text-xs p-4 rounded-xl text-emerald-400 overflow-y-auto space-y-2 h-[320px]" id="cli-console">
+                    <!-- Stream logs -->
                 </div>
             </div>
 
-            <!-- Middle Right: Console & Welcome Card & Errors -->
-            <div class="space-y-8">
-                <!-- Error Banner (Custom Alert) -->
-                <div id="error-banner" class="hidden bg-red-500/10 border border-red-500/20 p-5 rounded-2xl flex items-start gap-4 shadow-lg">
-                    <div class="bg-red-500/20 p-2 rounded-lg text-red-400">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                        </svg>
-                    </div>
-                    <div class="flex-1">
-                        <h4 class="text-sm font-bold text-red-400 font-sans">Execution Error</h4>
-                        <p id="error-message" class="text-xs text-slate-300 mt-1 leading-relaxed font-mono whitespace-pre-wrap"></p>
-                        <div id="error-tips-container" class="mt-3"></div>
-                        <button onclick="document.getElementById('error-banner').classList.add('hidden')" class="mt-4 bg-red-500/20 hover:bg-red-500/30 text-red-400 font-bold px-3 py-1.5 rounded-lg text-[10px] transition-all">
-                            Dismiss
-                        </button>
-                    </div>
+            <!-- Welcome Screen (Before first scan) -->
+            <div id="scan-welcome" class="glass p-12 rounded-2xl text-center flex flex-col items-center justify-center min-h-[380px]">
+                <div class="bg-accentpurple/10 p-5 rounded-full text-accentpurple mb-4">
+                    <svg class="w-14 h-14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
                 </div>
-                
-                <!-- Scan Status Overlay (Real-time logs style) -->
-                <div id="scan-loading" class="hidden glass p-6 rounded-2xl flex flex-col min-h-[400px]">
-                    <div class="flex items-center gap-3 border-b border-slate-800 pb-3 mb-4">
-                        <div class="w-4 h-4 border-2 border-slate-800 border-t-accentpurple rounded-full animate-spin"></div>
-                        <h3 class="text-sm font-bold text-slate-300">Scanner Engine Console Activity</h3>
-                    </div>
-                    <!-- Interactive CLI console screen -->
-                    <div class="flex-1 bg-black/80 font-mono text-xs p-4 rounded-xl text-emerald-400 overflow-y-auto space-y-2 h-[320px]" id="cli-console">
-                        <!-- Stream logs -->
-                    </div>
-                </div>
-
-                <!-- Welcome Screen (Before first scan) -->
-                <div id="scan-welcome" class="glass p-12 rounded-2xl text-center flex flex-col items-center justify-center min-h-[380px]">
-                    <div class="bg-accentpurple/10 p-5 rounded-full text-accentpurple mb-4">
-                        <svg class="w-14 h-14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-slate-200">Scope Scanner Ready</h3>
-                    <p class="text-sm text-slate-400 max-w-md mx-auto mt-2 leading-relaxed">Configure policy tolerances and select a target scope above to initiate credential evaluation.</p>
-                </div>
+                <h3 class="text-xl font-bold text-slate-200">Scope Scanner Ready</h3>
+                <p class="text-sm text-slate-400 max-w-md mx-auto mt-2 leading-relaxed">Configure policy tolerances and select a target scope above to initiate credential evaluation.</p>
             </div>
         </div>
 
@@ -377,11 +336,116 @@ HTML_TEMPLATE = """
         </div>
     </main>
 
+    <!-- Policy Modal -->
+    <div id="modal-policy" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-fadeIn">
+        <div class="glass w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-slate-800">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/40">
+                <h3 class="text-md font-bold flex items-center gap-2 text-slate-200">
+                    <svg class="w-5 h-5 text-accentpurple" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg> Custom Policy Controls
+                </h3>
+                <button onclick="toggleModal('modal-policy')" class="text-slate-400 hover:text-white p-1 hover:bg-slate-800 rounded-lg transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <!-- Modal Body -->
+            <div class="p-6 overflow-y-auto space-y-5">
+                <!-- Entropy Threshold Range Slider -->
+                <div>
+                    <div class="flex justify-between text-xs font-bold text-slate-400 mb-2">
+                        <span class="uppercase tracking-wider">Entropy Threshold</span>
+                        <span id="entropy-val" class="text-accentpurple font-mono text-sm">4.5</span>
+                    </div>
+                    <input type="range" id="entropy-slider" min="3.0" max="7.0" step="0.1" value="4.5" oninput="document.getElementById('entropy-val').innerText = this.value" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-accentpurple">
+                    <p class="text-[10px] text-slate-500 mt-1">Lower values find more custom secrets but increase false positives.</p>
+                </div>
+
+                <!-- Detector Categories Checkboxes -->
+                <div class="space-y-2">
+                    <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Enabled Detectors</span>
+                    <div class="grid grid-cols-2 gap-2 text-xs font-medium" id="policy-categories">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+            <!-- Modal Footer -->
+            <div class="px-6 py-4 border-t border-slate-800 flex justify-end bg-slate-900/20">
+                <button onclick="toggleModal('modal-policy')" class="bg-accentpurple hover:opacity-90 text-white font-bold py-2 px-5 rounded-xl text-xs shadow-lg shadow-accentpurple/15 transition-all">
+                    Apply Policy
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Remediation Modal -->
+    <div id="modal-remediation" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4 animate-fadeIn">
+        <div class="glass w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-slate-800">
+            <!-- Modal Header -->
+            <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/40">
+                <h3 class="text-md font-bold flex items-center gap-2 text-slate-200">
+                    <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg> Remediation Center
+                </h3>
+                <button onclick="toggleModal('modal-remediation')" class="text-slate-400 hover:text-white p-1 hover:bg-slate-800 rounded-lg transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <!-- Modal Body -->
+            <div class="p-6 overflow-y-auto space-y-4">
+                <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800 space-y-3">
+                    <h3 class="text-sm font-bold text-slate-300">Workspace Guards</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed">Block exposures at the pre-commit layer or automatically ignore exposed environment files.</p>
+                    <div class="grid grid-cols-1 gap-2 pt-2">
+                        <button onclick="runRemediation('install-hook')" class="w-full text-left bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold px-4 py-2.5 rounded-lg text-xs flex items-center justify-between transition-all">
+                            <span>Install Git Pre-Commit Hook</span>
+                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
+                        <button onclick="runRemediation('fix-gitignore')" class="w-full text-left bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold px-4 py-2.5 rounded-lg text-xs flex items-center justify-between transition-all">
+                            <span>Audit & Auto-fix .gitignore</span>
+                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal Footer -->
+            <div class="px-6 py-4 border-t border-slate-800 flex justify-end bg-slate-900/20">
+                <button onclick="toggleModal('modal-remediation')" class="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold py-2 px-5 rounded-xl text-xs border border-slate-700 transition-all">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- JS Logic -->
     <script>
         let currentFindings = [];
         let severityChart = null;
         let rulesList = [];
+
+        function toggleModal(id) {
+            const modal = document.getElementById(id);
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            } else {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }
+        }
+
+        // Close modal when clicking outside the dialog content
+        window.addEventListener('click', (e) => {
+            if (e.target.id && e.target.id.startsWith('modal-')) {
+                toggleModal(e.target.id);
+            }
+        });
 
         // Fetch Rule categories on startup to populate Policy panel
         window.addEventListener('DOMContentLoaded', async () => {
@@ -850,18 +914,23 @@ HTML_TEMPLATE = """
                 severityChart.destroy();
             }
 
+            const total = counts.TOTAL || 0;
+            const data = total === 0 ? [1] : [
+                counts.CRITICAL || 0,
+                counts.HIGH || 0,
+                counts.MEDIUM || 0,
+                counts.LOW || 0
+            ];
+            const backgroundColor = total === 0 ? ['#10b981'] : ['#ef4444', '#f59e0b', '#eab308', '#10b981'];
+            const labels = total === 0 ? ['Secure'] : ['Critical', 'High', 'Medium', 'Low'];
+
             severityChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Critical', 'High', 'Medium', 'Low'],
+                    labels: labels,
                     datasets: [{
-                        data: [
-                            counts.CRITICAL || 0,
-                            counts.HIGH || 0,
-                            counts.MEDIUM || 0,
-                            counts.LOW || 0
-                        ],
-                        backgroundColor: ['#ef4444', '#f59e0b', '#eab308', '#10b981'],
+                        data: data,
+                        backgroundColor: backgroundColor,
                         borderColor: '#0b0f19',
                         borderWidth: 2
                     }]

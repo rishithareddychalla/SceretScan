@@ -1,4 +1,4 @@
-name: SentinelScan CI
+name: SentinelScan CI/CD
 
 on:
   push:
@@ -7,8 +7,9 @@ on:
     branches: [ "main", "master", "develop" ]
 
 permissions:
-  contents: read
+  contents: write
   security-events: write # Required for uploading SARIF reports
+  packages: write # Required for pushing to GitHub Container Registry
 
 jobs:
   sentinel-scan:
@@ -39,3 +40,65 @@ jobs:
         if: always() # Upload results even if scanning blocks the build
         with:
           sarif_file: sentinel-report.sarif
+
+  deploy-pages:
+    needs: sentinel-scan
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Generate HTML Report
+        run: |
+          # Run scan and output HTML report
+          python sentinel.py scan . --format html --output-file report.html
+          # Create publication directory to contain only the report
+          mkdir public
+          mv report.html public/index.html
+
+      - name: Deploy static report to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+
+  deploy-docker:
+    needs: sentinel-scan
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Log in to GitHub Container Registry (GHCR)
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Downcase repository name for image tag
+        run: |
+          echo "IMAGE_NAME=ghcr.io/${{ github.repository }}" | tr '[:upper:]' '[:lower:]' >> $GITHUB_ENV
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:${{ github.sha }}
